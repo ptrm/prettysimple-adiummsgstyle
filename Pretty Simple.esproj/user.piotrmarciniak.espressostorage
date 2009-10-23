@@ -14,13 +14,19 @@
 		<array>
 			<dict>
 				<key>DocumentURL</key>
-				<string>file://localhost/Users/piotrmarciniak/Documents/Projekty/Adium%20styles/Pretty%20Simple/Contents/Resources/Project.html</string>
+				<string>file://localhost/Users/piotrmarciniak/Documents/Projekty/Adium%20styles/Pretty%20Simple/Forks/Scrollbars/Contents/Resources/Main.css</string>
 				<key>StateType</key>
 				<string>DefaultTab</string>
 			</dict>
 			<dict>
 				<key>DocumentURL</key>
-				<string>file://localhost/Users/piotrmarciniak/Documents/Projekty/Adium%20styles/Pretty%20Simple/Contents/Resources/Main.css</string>
+				<string>file://localhost/Users/piotrmarciniak/Documents/Projekty/Adium%20styles/Pretty%20Simple/Forks/Scrollbars/Contents/Resources/Scrollbars%20.css</string>
+				<key>StateType</key>
+				<string>DefaultTab</string>
+			</dict>
+			<dict>
+				<key>DocumentURL</key>
+				<string>file://localhost/Users/piotrmarciniak/Documents/Projekty/Adium%20styles/Pretty%20Simple/Forks/Scrollbars/Contents/Resources/Project.html</string>
 				<key>StateType</key>
 				<string>DefaultTab</string>
 			</dict>
