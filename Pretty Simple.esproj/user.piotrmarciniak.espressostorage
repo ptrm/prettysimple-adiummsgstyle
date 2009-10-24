@@ -20,13 +20,37 @@
 			</dict>
 			<dict>
 				<key>DocumentURL</key>
-				<string>file://localhost/Users/piotrmarciniak/Documents/Projekty/Adium%20styles/Pretty%20Simple/Forks/Scrollbars/Contents/Resources/Scrollbars%20.css</string>
+				<string>file://localhost/Users/piotrmarciniak/Documents/Projekty/Adium%20styles/Pretty%20Simple/Forks/Scrollbars/Contents/Resources/Scrollbars.css</string>
 				<key>StateType</key>
 				<string>DefaultTab</string>
 			</dict>
 			<dict>
 				<key>DocumentURL</key>
 				<string>file://localhost/Users/piotrmarciniak/Documents/Projekty/Adium%20styles/Pretty%20Simple/Forks/Scrollbars/Contents/Resources/Project.html</string>
+				<key>StateType</key>
+				<string>DefaultTab</string>
+			</dict>
+			<dict>
+				<key>DocumentURL</key>
+				<string>file://localhost/Users/piotrmarciniak/Documents/Projekty/Adium%20styles/Pretty%20Simple/Forks/Scrollbars/Contents/Info.plist</string>
+				<key>StateType</key>
+				<string>DefaultTab</string>
+			</dict>
+			<dict>
+				<key>DocumentURL</key>
+				<string>file://localhost/Users/piotrmarciniak/Documents/Projekty/Adium%20styles/Pretty%20Simple/Forks/Scrollbars/Contents/Resources/Preview%20template.html</string>
+				<key>StateType</key>
+				<string>DefaultTab</string>
+			</dict>
+			<dict>
+				<key>DocumentURL</key>
+				<string>file://localhost/Users/piotrmarciniak/Documents/Projekty/Adium%20styles/Pretty%20Simple/Forks/Scrollbars/Contents/TODO</string>
+				<key>StateType</key>
+				<string>DefaultTab</string>
+			</dict>
+			<dict>
+				<key>DocumentURL</key>
+				<string>file://localhost/Users/piotrmarciniak/Documents/Projekty/Adium%20styles/Pretty%20Simple/Forks/Scrollbars/Contents/Resources/Footer.html</string>
 				<key>StateType</key>
 				<string>DefaultTab</string>
 			</dict>

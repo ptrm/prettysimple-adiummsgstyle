@@ -7,9 +7,9 @@
 	<key>CFBundleGetInfoString</key>
 	<string>0.1</string>
 	<key>CFBundleIdentifier</key>
-	<string>prettysimple.style</string>
+	<string>prettysimplesc.style</string>
 	<key>CFBundleName</key>
-	<string>Pretty Simple</string>
+	<string>Pretty Simple Sc</string>
 	<key>DefaultBackgroundIsTransparent</key>
 	<true/>
 	<key>DefaultFontFamily</key>

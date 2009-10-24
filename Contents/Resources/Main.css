@@ -15,8 +15,16 @@ body {
 	top: 0;
 	bottom: 0;
 	right: 0;
-	overflow: scroll;
-	padding: 10px 4px;
+	overflow: auto;
+	overflow-x: hidden;
+	padding: 0 4px;
+// The margin here and at #chat is there because otherwise scrollbar
+// would appear even when not necessary
+	margin: 0;
+}
+
+#Chat {
+	margin: 0;
 }
 
 a {
