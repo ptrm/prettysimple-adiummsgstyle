@@ -1,0 +1,10 @@
+<script type="text/javascript">
+ 	// Putting the #chat container into another div.
+ 	// This allows the custom scrollbar to appear.
+	var d_chat = document.getElementById("Chat");
+	var d_container = document.createElement('div');
+ 	
+ 	d_container.setAttribute('id', 'container');
+ 	document.body.appendChild(d_container);
+ 	d_container.appendChild(d_chat);
+</script>

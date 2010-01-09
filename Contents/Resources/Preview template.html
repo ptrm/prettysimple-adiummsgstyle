@@ -1,0 +1,306 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<base href="%@">
+	<script type="text/ecmascript" defer="defer">
+
+		//Appending new content to the message view
+		function appendMessage(html) {
+			var shouldScroll = nearBottom();
+
+			//Remove any existing insertion point
+			var insert = document.getElementById("insert");
+			if(insert) 
+				insert.parentNode.removeChild(insert);
+
+			//Append the new message to the bottom of our chat block
+			var chat = document.getElementById("Chat");
+			var range = document.createRange();
+			range.selectNode(chat);
+			var documentFragment = range.createContextualFragment(html);
+			chat.appendChild(documentFragment);
+
+			alignChat(shouldScroll);
+		}
+		function appendMessageNoScroll(html) {
+			//Remove any existing insertion point
+			var insert = document.getElementById("insert");
+			if(insert) 
+				insert.parentNode.removeChild(insert);
+
+			//Append the new message to the bottom of our chat block
+			var chat = document.getElementById("Chat");
+			var range = document.createRange();
+			range.selectNode(chat);
+			var documentFragment = range.createContextualFragment(html);
+			chat.appendChild(documentFragment);
+		}
+		function appendNextMessage(html){
+			var shouldScroll = nearBottom();
+
+			//Locate the insertion point
+			var insert = document.getElementById("insert");
+			if(insert){
+				//make new node
+				var range = document.createRange();
+				range.selectNode(insert.parentNode);
+				var newNode = range.createContextualFragment(html);
+
+				//swap
+				insert.parentNode.replaceChild(newNode,insert);
+
+				alignChat(shouldScroll);
+			} else {
+				appendMessage(html);
+			}
+		}
+		function appendNextMessageNoScroll(html){
+			//Locate the insertion point
+			var insert = document.getElementById("insert");
+			if(insert){
+				//make new node
+				var range = document.createRange();
+				range.selectNode(insert.parentNode);
+				var newNode = range.createContextualFragment(html);
+
+				//swap
+				insert.parentNode.replaceChild(newNode,insert);
+			} else {
+				appendMessageNoScroll(html);
+			}
+		}
+		function replaceLastMessage(html){
+			shouldScroll = nearBottom();
+
+			//Retrieve the current insertion point, then remove it
+			//This requires that there have been an insertion point... is there a better way to retrieve the last element? -evands
+			var insert = document.getElementById("insert");
+			if(insert){
+				var parentNode = insert.parentNode;
+				var lastMessage = insert.previousSibling;
+				parentNode.removeChild(insert);
+				parentNode.removeChild(lastMessage);
+			}
+
+			//Now append the message itself
+			var range = document.createRange();
+			var chat = document.getElementById("Chat");
+			range.selectNode(chat);
+			documentFragment = range.createContextualFragment(html);
+			chat.appendChild(documentFragment);
+
+			alignChat(shouldScroll);
+		}
+		//Auto-scroll to bottom.  Use nearBottom to determine if a scrollToBottom is desired.
+		function nearBottom() {
+			return ( document.body.scrollTop >= ( document.body.offsetHeight - ( window.innerHeight * 1.2 ) ) );
+		}
+		function scrollToBottom() {
+			document.body.scrollTop = document.body.offsetHeight;
+		}
+
+		//Dynamically exchange the active stylesheet
+		function setStylesheet( id, url ) {
+			var code = "<style id=\"" + id + "\" type=\"text/css\" media=\"screen,print\">";
+			if( url.length ) 
+				code += "@import url( \"" + url + "\" );";
+			code += "</style>";
+			var range = document.createRange();
+			var head = document.getElementsByTagName( "head" ).item(0);
+			range.selectNode( head );
+			var documentFragment = range.createContextualFragment( code );
+			head.removeChild( document.getElementById( id ) );
+			head.appendChild( documentFragment );
+		}
+
+		//Swap an image with its alt-tag text on click, or expand/unexpand an attached image
+		document.onclick = imageCheck;
+		function imageCheck() {
+			var shouldScroll = nearBottom();
+			var node = event.target;
+			if(node.tagName.toLowerCase() == 'img' && !client.zoomImage(node) && node.alt) {
+				var a = document.createElement('a');
+				a.setAttribute('onclick', 'imageSwap(this)');
+				a.setAttribute('src', node.getAttribute('src'));
+				a.className = node.className;
+				var text = document.createTextNode(node.alt);
+				a.appendChild(text);
+				node.parentNode.replaceChild(a, node);
+			}
+			alignChat(shouldScroll);
+		}
+
+		function imageSwap(node) {
+			var shouldScroll = nearBottom();
+
+			//Swap the image/text
+			var img = document.createElement('img');
+			img.setAttribute('src', node.getAttribute('src'));
+			img.setAttribute('alt', node.firstChild.nodeValue);
+			img.className = node.className;
+			node.parentNode.replaceChild(img, node);
+
+			alignChat(shouldScroll);
+		}
+
+		//Align our chat to the bottom of the window.  If true is passed, view will also be scrolled down
+		function alignChat(shouldScroll) {
+			var windowHeight = window.innerHeight;
+
+			if (windowHeight > 0) {
+				var contentElement = document.getElementById('Chat');
+				var contentHeight = contentElement.offsetHeight;
+				if (windowHeight - contentHeight > 0) {
+					contentElement.style.position = 'relative';
+					contentElement.style.top = (windowHeight - contentHeight) + 'px';
+				} else {
+					contentElement.style.position = 'static';
+				}
+			}
+
+			if (shouldScroll) scrollToBottom();
+		}
+
+		function windowDidResize(){
+			alignChat(true/*nearBottom()*/); //nearBottom buggy with inactive tabs
+		}
+
+		window.onresize = windowDidResize;
+	</script>
+
+	<style type="text/css">
+		.actionMessageUserName { display:none; }
+		.actionMessageBody:before { content:"*"; }
+		.actionMessageBody:after { content:"*"; }
+		*{ word-wrap:break-word; }
+		img.scaledToFitImage { height:auto; width:100%; }
+	</style>
+
+	<!-- This style is shared by all variants. !-->
+	<style id="baseStyle" type="text/css" media="screen,print">
+		@import url(Main.css);
+	</style>
+
+	<!-- Although we call this mainStyle for legacy reasons, it's actually the variant style !-->
+	<style id="mainStyle" type="text/css" media="screen,print">
+		//@import url( "%@" );
+	</style>
+
+</head>
+<body onload="alignChat(true);" style="==bodyBackground==">
+%@
+<div id="Chat">
+<div class="status date_separator">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="statusMsg">Data data data data</span>
+</div>
+
+<div class="incoming history">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="sender">%sender%</span>
+	<div class="message">Drogi Marszałku, Wysoka Izbo. PKB rośnie. Różnorakie i unowocześniania obecnej sytuacji. Różnorakie i określenia nowych propozycji. Proszę państwa, zakres i realizacji dalszych <a href="http://someaddress.com">http://someaddress.com</a> poczynań. W ten sposób wyeliminowanie korupcji umożliwia.</div>
+	<span class="timeC" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<div class="message consecutive">A na wiosnę... Pomijając fakt, że zakończenie tego projektu przedstawia interpretującą próbę sprawdzenia odpowiednich warunków aktywizacji. Już nie.</div>
+</div>
+
+<div class="outgoing history">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="sender">%sender%</span>
+<!--	<span class="sender">%sender%</span>-->
+	<div class="message">Drogi Marszałku, Wysoka Izbo. PKB rośnie.</div>
+</div>
+
+<!--<div class="status offline">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="statusMsg">%sender% rozłączył się</span>
+</div>
+
+<div class="status date_separator">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="statusMsg">Data data data data</span>
+</div>
+
+<div class="incoming">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="sender">%sender%</span>
+	<div class="message">Drogi Marszałku, Wysoka Izbo. PKB rośnie. Różnorakie i unowocześniania obecnej sytuacji. Różnorakie i określenia nowych propozycji. Proszę państwa, zakres i realizacji dalszych poczynań. W ten sposób wyeliminowanie korupcji umożliwia.</div>
+</div>
+
+<div class="outgoing">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="sender">%sender%</span>
+<!--	<span class="sender">%sender%</span>--*>
+	<div class="message">Drogi Marszałku, Wysoka <a href="http://unvisitedsite.com">http://unvisitedsite.com</a> Izbo. PKB rośnie <a href="http://onet.pl">http://onet.pl</a>.</div>
+</div>
+
+<div class="status online">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="statusMsg">%sender% jest dostępny</span>
+</div>
+
+<div class="status offline">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="statusMsg">%sender% rozłączył się</span>
+</div>
+
+<div class="status away">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="statusMsg">%sender% zaraz wróci</span>
+</div>
+
+<div class="status error">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="statusMsg">Wystąpił błąd</span>
+</div>
+
+<div class="status date_separator">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="statusMsg">Data data data data</span>
+</div>
+
+<div class="status">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="statusMsg">Zwykły status</span>
+</div>
+
+<div class="status">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="statusMsg"><img class="fileIcon" src="http://www.uhrenmix.de/templates/uhrenmix/buttons/german/cart_small_icon.gif" alt="file icon" />%fileName%<button onlick="%saveFileHander%">Save</button></span>
+</div>
+
+<div class="incoming">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="sender">%sender%</span>
+	<div class="message">Drogi Marszałku, Wysoka Izbo. PKB rośnie Nikt inny was nie zapewni iż utworzenie komisji śledczej do przeanalizowania.</div>
+	<span class="timeC" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<div class="message consecutive">A na wiosnę... Pomijając fakt, że zakończenie tego projektu przedstawia interpretującą próbę sprawdzenia odpowiednich warunków aktywizacji. Już nie.</div>
+	<span class="timeC" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<div class="message consecutive">Praca wre. Po głębszym przemyśleniu sprawy, doszedłem do przeanalizowania systemu szkolenia kadry odpowiadającego potrzebom. Proszę państwa, zakres.</div>
+	<span class="timeC" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<div class="message consecutive">Przez ostatnie kilkanaście lat odkryliśmy że wyeliminowanie korupcji zmusza nas do przeanalizowania istniejących kryteriów przedstawia.</div>
+</div>
+
+<div class="outgoing">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<span class="sender">%sender%</span>
+	<div class="message">Różnorakie i bogate doświadczenia pozwalają na wiosnę... Nikt inny was nie.</div>
+	<span class="timeC" title="%time{E~EEE, d LLL Y, H:m}%">%shortTime%</span>
+	<div class="message consecutive">Restrukturyzacja. Jednakże, usprawnienie systemu wymaga niezwykłej precyzji w restrukturyzacji przedsiębiorstwa. Wagi.</div>
+</div>-->
+
+</div>
+%@
+<script type="text/javascript">
+ 	//Putting the #chat container into another div.
+ 	//This allows the custom scrollbar to appear.
+	var d_chat = document.getElementById("Chat");
+	var d_container = document.createElement('div');
+ 	
+ 	d_container.setAttribute('id', 'container');
+ 	document.body.appendChild(d_container);
+ 	d_container.appendChild(d_chat);
+</script>
+
+</body>
+</html>
