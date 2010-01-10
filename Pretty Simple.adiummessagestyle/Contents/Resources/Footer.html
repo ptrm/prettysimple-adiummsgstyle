@@ -1,5 +1,5 @@
 <script type="text/javascript">
- 	// Putting the #chat container into another div.
+ 	// Putting the #Chat container into another div.
  	// This allows the custom scrollbar to appear.
 	var d_chat = document.getElementById("Chat");
 	var d_container = document.createElement('div');
@@ -8,6 +8,10 @@
  	document.body.appendChild(d_container);
  	d_container.appendChild(d_chat);
  	
+ 	
+ 	// overrides of the functions form Webkit Message View Plugin's Template.html
+ 	// This is necessary for the #container's content to be scrolled down
+ 	// when new messages are displayed.
 	function nearBottom() {
 		return ( d_container.scrollTop >= ( d_chat.offsetHeight - ( window.innerHeight * 1.2 ) ) );
 	}
@@ -15,5 +19,4 @@
 	function scrollToBottom() {
 		d_container.scrollTop = d_chat.offsetHeight;
 	}
- 	
 </script>
