@@ -81,19 +81,19 @@
 ::-webkit-scrollbar-track-piece:vertical:start:no-button,
 .double-end::-webkit-scrollbar-track-piece:vertical:start,
 .none::-webkit-scrollbar-track-piece:vertical:start {
-    margin-top: 6px;
+    margin-top: 10px;
 }
 
 ::-webkit-scrollbar-track-piece:vertical:end:no-button,
 .double-start::-webkit-scrollbar-track-piece:vertical:end,
 .none::-webkit-scrollbar-track-piece:vertical:end {
-    margin-bottom: 6px;
+    margin-bottom: 10px;
 }
 
 ::-webkit-scrollbar-track-piece:vertical:end:no-button:corner-present,
 .double-start::-webkit-scrollbar-track-piece:vertical:end:corner-present,
 .none::-webkit-scrollbar-track-piece:vertical:end:corner-present {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 /*:not(.none):not(.double-end)::-webkit-scrollbar-track-piece:vertical:start:single-button,
@@ -104,13 +104,13 @@
     margin-top: -6px;
 }*/
 
-/*:not(.none):not(.double-start)::-webkit-scrollbar-track-piece:vertical:end:single-button,
+:not(.none):not(.double-start)::-webkit-scrollbar-track-piece:vertical:end:single-button,
 :not(.none):not(.double-start)::-webkit-scrollbar-track-piece:vertical:end:double-button,
 .single::-webkit-scrollbar-track-piece:vertical:end,
 .double-end::-webkit-scrollbar-track-piece:vertical:end,
 .double-both::-webkit-scrollbar-track-piece:vertical:end {
-    margin-bottom: -6px;
-}*/
+    margin-bottom: 10px;
+}
 
 ::-webkit-scrollbar-track:vertical:disabled {
     -webkit-border-image: url(images/vertical-track.png) 10 0 10 0;

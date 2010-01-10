@@ -295,12 +295,59 @@
  	//Putting the #chat container into another div.
  	//This allows the custom scrollbar to appear.
 	var d_chat = document.getElementById("Chat");
+//	var d_container = document.body;
 	var d_container = document.createElement('div');
  	
  	d_container.setAttribute('id', 'container');
  	document.body.appendChild(d_container);
  	d_container.appendChild(d_chat);
+
+function nearBottom() {
+	return ( d_container.scrollTop >= ( d_chat.offsetHeight - ( window.innerHeight * 1.2 ) ) );
+}
+function scrollToBottom() {
+	d_container.scrollTop = d_chat.offsetHeight;
+}
+
+
+function updateDbg() {
+	document.getElementById("oh").value = d_chat.offsetHeight;
+	document.getElementById("st").value = d_container.scrollTop;
+
+	document.getElementById("r").value = ( d_chat.offsetHeight - ( window.innerHeight * 1.2 ) );
+
+}
+
+function f_addMsg() {
+	appendMessage("<div class=\"incoming\"><span class=\"time\" title=\"%time{E~EEE, d LLL Y, H:m}%\">%shortTime%</span><span class=\"sender\">%sender%</span><div class=\"message\">" + document.getElementById("msg").value + "</div></div>");
+	
+	document.getElementById("msg").value = "";
+	document.getElementById("msg").focus();
+
+	updateDbg();
+
+	return false;
+}
+
 </script>
+
+<form onsubmit="f_addMsg(); return false;" style="
+	position:fixed;
+	left:0;
+	top: 0;
+	background: white;
+	border: 1px black solid;
+	"
+>
+<fieldset>
+	<input id="oh" />
+	<input id="st" />
+	<input id="r" />
+	<input type="button" value="dbg" onclick="updateDbg()" />
+</fieldset>
+	<input id="msg" />
+	<input type="submit" value="Send" />
+</form>
 
 </body>
 </html>
