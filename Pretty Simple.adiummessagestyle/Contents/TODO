@@ -1,7 +1,0 @@
-Resize
-
-*****
-span.timeC, div.status span.time {
-	margin-left: 10px;
-}
-
