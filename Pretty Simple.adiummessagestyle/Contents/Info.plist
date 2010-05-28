@@ -13,9 +13,9 @@
 	<key>DefaultBackgroundIsTransparent</key>
 	<true/>
 	<key>DefaultFontFamily</key>
-	<string>Arial</string>
+	<string>Gill Sans</string>
 	<key>DefaultFontSize</key>
-	<integer>10</integer>
+	<integer>13</integer>
 	<key>DefaultVariant</key>
 	<string>Default</string>
 	<key>MessageViewVersion</key>

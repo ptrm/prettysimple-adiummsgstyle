@@ -4,9 +4,7 @@
 body {
 	color: white;
 	background: transparent;
-	font-family: Helvetica Neue;
 	font-weight: 100;
-	font-size: 11pt;
 }
 
 #container {
@@ -44,6 +42,15 @@ div {
 	padding: 5px;
 	/*-webkit-box-shadow: 1px 1px 4px rgba(10, 10, 10, 0.7);*/
 	position: relative;
+}
+
+div.time, div.timeC, span.sender, span.statusMsg {
+	font-family: Helvetica Neue;
+	font-weight: 100;
+}
+
+span.statusMsg {
+	font-size: 15px;
 }
 
 div.incoming, div.outgoing, div.status {
@@ -99,6 +106,7 @@ span.timeC, div.status span.time {
 	margin-left: 10px;
 	font-size: 10px;
 	color: rgba(255, 255, 255, 0.5);
+	clear: both;
 }
 
 div.status span.time {
@@ -119,9 +127,7 @@ div.message {
 	background-image: none;
 	padding: 0;
 	margin-top: 4px;
-	font-family: 'Gill Sans';
 	font-weight: 100;
-	font-size: 10pt;
 	color: rgba(255,255,255, 0.8);
 	text-align: justify;
 }
