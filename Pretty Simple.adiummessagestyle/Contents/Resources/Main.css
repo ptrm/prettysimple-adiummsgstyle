@@ -44,7 +44,7 @@ div {
 	position: relative;
 }
 
-div.time, div.timeC, span.sender, span.statusMsg {
+span.time, span.timeC, span.sender, span.statusMsg {
 	font-family: Helvetica Neue;
 	font-weight: 100;
 }
