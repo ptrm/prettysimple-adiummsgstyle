@@ -129,11 +129,24 @@ div.message {
 	margin-top: 4px;
 	font-weight: 100;
 	color: rgba(255,255,255, 0.8);
-	text-align: justify;
+	text-align: left;
 }
 
-div.consecutive {
-	margin-right: 34px;	
+div.incoming div.consecutive {
+	margin-right: 40px;	
+}
+
+div.outgoing div.message {
+	text-align: right;
+}
+
+div.outgoing span.timeC {
+	float: left;
+	margin: 0 10px 0 0;
+}
+
+div.outgoing div.consecutive {
+	margin-left: 40px;
 }
 
 button {

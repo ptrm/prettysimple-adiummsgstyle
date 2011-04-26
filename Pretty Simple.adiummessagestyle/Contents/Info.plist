@@ -5,7 +5,7 @@
 	<key>AllowTextColors</key>
 	<false/>
 	<key>CFBundleGetInfoString</key>
-	<string>0.2</string>
+	<string>0.2.1alpha</string>
 	<key>CFBundleIdentifier</key>
 	<string>prettysimple.style</string>
 	<key>CFBundleName</key>
