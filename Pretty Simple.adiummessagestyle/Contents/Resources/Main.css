@@ -57,6 +57,15 @@ div.incoming, div.outgoing, div.status {
 	margin-top: 10px;
 }
 
+div.incoming, div.outgoing {
+	width: 90%;
+	clear: both;
+}
+
+div.outgoing {
+	float: right;
+}
+
 div.incoming {
 	background-color: rgba(0,0,0, 0.4);
 }
