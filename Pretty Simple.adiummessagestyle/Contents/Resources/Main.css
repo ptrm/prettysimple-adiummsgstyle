@@ -57,15 +57,6 @@ div.incoming, div.outgoing, div.status {
 	margin-top: 10px;
 }
 
-div.incoming, div.outgoing {
-	width: 90%;
-	clear: both;
-}
-
-div.outgoing {
-	float: right;
-}
-
 div.incoming {
 	background-color: rgba(0,0,0, 0.4);
 }
@@ -142,30 +133,12 @@ div.message {
 }
 
 div.incoming div.consecutive {
-	margin-right: 40px;	
+	margin-right: 40px;
 }
 
 div.outgoing div.message {
 	text-align: right;
-}
-
-div.outgoing span.timeC {
-	float: left;
-	margin: 0 10px 0 0;
-}
-
-div.outgoing span.time {
-	left: 4px;
-	right: auto;
-}
-
-div.outgoing span.sender {
-	display: block;
-	text-align: right;
-}
-
-div.outgoing div.consecutive {
-	margin-left: 40px;
+	margin-right: 40px;
 }
 
 button {
