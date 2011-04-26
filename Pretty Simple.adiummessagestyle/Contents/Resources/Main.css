@@ -145,6 +145,16 @@ div.outgoing span.timeC {
 	margin: 0 10px 0 0;
 }
 
+div.outgoing span.time {
+	left: 4px;
+	right: auto;
+}
+
+div.outgoing span.sender {
+	display: block;
+	text-align: right;
+}
+
 div.outgoing div.consecutive {
 	margin-left: 40px;
 }
