@@ -1,198 +1,547 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Style preview</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<script type="text/ecmascript" defer="defer">
 
-<style type="text/css">
+		//Appending new content to the message view
+		function appendMessage(html) {
+			var shouldScroll = nearBottom();
 
-body {
-	color: white;
-	background: slategray;
-	font-family: Helvetica Neue;
-	font-weight: 100;
-	font-size: 11pt;
-	margin: 10px 4px;
-}
+			//Remove any existing insertion point
+			var insert = document.getElementById("insert");
+			if(insert) 
+				insert.parentNode.removeChild(insert);
 
-a {
-	color: inherit;
-}
+			//Append the new message to the bottom of our chat block
+			var chat = document.getElementById("Chat");
+			var range = document.createRange();
+			range.selectNode(chat);
+			var documentFragment = range.createContextualFragment(html);
+			chat.appendChild(documentFragment);
 
-a:visited:before {
-	content: "✓";
-	font-size: 10px;
-	margin-right: 2px;
-}
+			alignChat(shouldScroll);
+		}
+		function appendMessageNoScroll(html) {
+			//Remove any existing insertion point
+			var insert = document.getElementById("insert");
+			if(insert) 
+				insert.parentNode.removeChild(insert);
 
-a img {
-	border: 0;
-}
+			//Append the new message to the bottom of our chat block
+			var chat = document.getElementById("Chat");
+			var range = document.createRange();
+			range.selectNode(chat);
+			var documentFragment = range.createContextualFragment(html);
+			chat.appendChild(documentFragment);
+		}
+		function appendNextMessage(html){
+			var shouldScroll = nearBottom();
 
-div {
-	-webkit-border-radius: 5px;
-	margin: 1px;
-	padding: 5px;
-	/*-webkit-box-shadow: 1px 1px 4px rgba(10, 10, 10, 0.7);*/
-	position: relative;
-}
+			//Locate the insertion point
+			var insert = document.getElementById("insert");
+			if(insert){
+				//make new node
+				var range = document.createRange();
+				range.selectNode(insert.parentNode);
+				var newNode = range.createContextualFragment(html);
 
-div.incoming, div.outgoing, div.status {
-	margin-top: 10px;
-}
+				//swap
+				insert.parentNode.replaceChild(newNode,insert);
 
-div.incoming {
-	background-color: rgba(0,0,0, 0.4);
-}
+				alignChat(shouldScroll);
+			} else {
+				appendMessage(html);
+			}
+		}
+		function appendNextMessageNoScroll(html){
+			//Locate the insertion point
+			var insert = document.getElementById("insert");
+			if(insert){
+				//make new node
+				var range = document.createRange();
+				range.selectNode(insert.parentNode);
+				var newNode = range.createContextualFragment(html);
 
-div.outgoing {
-	background-color:  rgba(0,0,0, 0.2);
-}
+				//swap
+				insert.parentNode.replaceChild(newNode,insert);
+			} else {
+				appendMessageNoScroll(html);
+			}
+		}
+		function replaceLastMessage(html){
+			shouldScroll = nearBottom();
 
-div.status {
-	background-color: rgba(255,204,102, 0.4);
-}
+			//Retrieve the current insertion point, then remove it
+			//This requires that there have been an insertion point... is there a better way to retrieve the last element? -evands
+			var insert = document.getElementById("insert");
+			if(insert){
+				var parentNode = insert.parentNode;
+				var lastMessage = insert.previousSibling;
+				parentNode.removeChild(insert);
+				parentNode.removeChild(lastMessage);
+			}
 
-div.status.online, div.status.return_away {
-	background-color: rgba(204,255,102, 0.4);
-}
+			//Now append the message itself
+			var range = document.createRange();
+			var chat = document.getElementById("Chat");
+			range.selectNode(chat);
+			documentFragment = range.createContextualFragment(html);
+			chat.appendChild(documentFragment);
 
-div.status.away, div.status.away_message {
-	background-color: rgba(0,0,0, 0.2);
-}
+			alignChat(shouldScroll);
+		}
+		//Auto-scroll to bottom.  Use nearBottom to determine if a scrollToBottom is desired.
+		function nearBottom() {
+			return ( document.body.scrollTop >= ( document.body.offsetHeight - ( window.innerHeight * 1.2 ) ) );
+		}
+		function scrollToBottom() {
+			document.body.scrollTop = document.body.offsetHeight;
+		}
 
-div.status.offline {
-	background-color: rgba(0,0,0, 0.75)
-}
+		//Dynamically exchange the active stylesheet
+		function setStylesheet( id, url ) {
+			var code = "<style id=\"" + id + "\" type=\"text/css\" media=\"screen,print\">";
+			if( url.length ) 
+				code += "@import url( \"" + url + "\" );";
+			code += "</style>";
+			var range = document.createRange();
+			var head = document.getElementsByTagName( "head" ).item(0);
+			range.selectNode( head );
+			var documentFragment = range.createContextualFragment( code );
+			head.removeChild( document.getElementById( id ) );
+			head.appendChild( documentFragment );
+		}
 
-div.status.error {
-	background-color: rgba(255, 0, 0, 0.4);
-}
+		//Swap an image with its alt-tag text on click, or expand/unexpand an attached image
+		document.onclick = imageCheck;
+		function imageCheck() {
+			var shouldScroll = nearBottom();
+			var node = event.target;
+			if(node.tagName.toLowerCase() == 'img' && !client.zoomImage(node) && node.alt) {
+				var a = document.createElement('a');
+				a.setAttribute('onclick', 'imageSwap(this)');
+				a.setAttribute('src', node.getAttribute('src'));
+				a.className = node.className;
+				var text = document.createTextNode(node.alt);
+				a.appendChild(text);
+				node.parentNode.replaceChild(a, node);
+			}
+			alignChat(shouldScroll);
+		}
 
-div.status.date_separator {
-	background-color: rgba(0, 0, 0, 0.6);
-}
+		function imageSwap(node) {
+			var shouldScroll = nearBottom();
 
-span.time {
-	display: block;
-	position: absolute;
-	top: 4px;
-	right: 4px;
-	/*font-family: 'Baskerville';*/
-	font-size: 18px;
-	color: rgba(255, 255, 255, 0.7);
-}
+			//Swap the image/text
+			var img = document.createElement('img');
+			img.setAttribute('src', node.getAttribute('src'));
+			img.setAttribute('alt', node.firstChild.nodeValue);
+			img.className = node.className;
+			node.parentNode.replaceChild(img, node);
 
-span.timeC, div.status span.time {
-	display: block;
-	float: right;
-	padding-top: 6px;
-	font-size: 10px;
-	color: rgba(255, 255, 255, 0.5);
-}
+			alignChat(shouldScroll);
+		}
 
-div.status span.time {
-	padding-top: 4px;
-	color: rgba(255, 255, 255, 1);
-}
+		//Align our chat to the bottom of the window.  If true is passed, view will also be scrolled down
+		function alignChat(shouldScroll) {
+			var windowHeight = window.innerHeight;
 
-div.status img {
-	height: 1em;
-}
+			if (windowHeight > 0) {
+				var contentElement = document.getElementById('Chat');
+				var contentHeight = contentElement.offsetHeight;
+				if (windowHeight - contentHeight > 0) {
+					contentElement.style.position = 'relative';
+					contentElement.style.top = (windowHeight - contentHeight) + 'px';
+				} else {
+					contentElement.style.position = 'static';
+				}
+			}
 
-span.sender {
-		font-size: 18px;
-}
+			if (shouldScroll) scrollToBottom();
+		}
 
-div.message {
-	-webkit-box-shadow: none;
-	background-image: none;
-	padding: 0;
-	margin-top: 4px;
-	font-family: 'Gill Sans';
-	font-weight: 100;
-	font-size: 10pt;
-	color: rgba(255,255,255, 0.8);
-	text-align: justify;
-}
+		function windowDidResize(){
+			alignChat(true/*nearBottom()*/); //nearBottom buggy with inactive tabs
+		}
 
-div.consecutive {
-	margin-right: 34px;	
-}
+		window.onresize = windowDidResize;
+	</script>
 
-button {
-	-webkit-border-radius: 5px;
-	margin: 0 10px;
-	padding: 1px 7px;
-	border: 1px solid rgba(0,0,0, 0.4);
-	background-color: rgba(0,0,0, 0.4);
-	color: white;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0,0,0, 0.1)), to(rgba(0,0,0, 0.4)));
-	vertical-align: bottom;
-}
+	<style type="text/css">
+		body {
+			font-family: 'Gill Sans';
+			font-size: 13px;
+		}
+		
+		.actionMessageUserName { display:none; }
+		.actionMessageBody:before { content:"*"; }
+		.actionMessageBody:after { content:"*"; }
+		*{ word-wrap:break-word; }
+		img.scaledToFitImage { height:auto; width:100%; }
+	</style>
 
-button:active {
-		background-image: -webkit-gradient(linear, left top, left bottom, to(rgba(0,0,0, 0.0)), from(rgba(0,0,0, 0.4)));
-}
+	<!-- This style is shared by all variants. !-->
+	<style id="baseStyle" type="text/css" media="screen,print">
+		@import url('Variants/Background 9.css');
+	</style>
 
-img {
-	border: 0;
-	margin: 0 5px;
-}
+	<!-- Although we call this mainStyle for legacy reasons, it's actually the variant style !-->
+	<style id="mainStyle" type="text/css" media="screen,print">
+		//@import url( "%@" );
+	</style>
+	
+	<!-- Layout variants styles -->
+	
+	<style type="text/css">
+		body.time-left div.outgoing .timeC {
+			float: left;
+		}
 
-img.scaledToFitImage {
-	width: auto;
-}
+		body.time-left div.outgoing div.message {
+			margin-right: 0;
+		}
+		
+		body.time-left div.outgoing div.message {
+			margin-left: 40px;
+		}
+		
+		body.msg-left div.outgoing div.message {
+			text-align: left;
+		}
+		
+	</style>
+	
+	<style id="_msgStyle" type="text/css">
+		body.floatMsg div.incoming, body.floatMsg div.outgoing {
+			width: 100%;
+			clear: both;
+		}
+		
+		body.floatMsg div.status {
+			clear: both;
+		}
+		
+		body.floatMsg div.outgoing {
+			float: right;
+		}
+	</style>
+	
+	<!-- -- -->
+	
+	<!-- Preview-specific code -->
+	<script src="https://ajax.googleapis.com/ajax/libs/mootools/1.3.2/mootools-yui-compressed.js" type="text/javascript"></script>
+	
+	<style type="text/css">
+		#container {
+			margin-top: 74px;
+		}
+		
+		#toolbox {
+			position: absolute;
+			top: 0;
+			right: 0;
+			left: 0;
+			height: 60px;
+			margin: 0;
+			
+			background: white;
+			
+			border-top-right-radius: 0;
+			border-top-left-radius: 0;
+			
+			color: black;
+			font-weight: normal;
+			font-size: 13px;
+		}
+		
+		#form_message input[type=text] {
+			width: 100px;
+		}
+		
+		#toolbox label {
+			background: #e0e0e0;
+			border-radius: 5px;
+			padding: 2px 10px;
+			margin: 0 5px 5px 0;
+			
+			display: inline-block;
+			float: left;
+		}
+	</style>
+	
+	<script type="text/javascript">
+		document.addEvent('domready', function() {
+			var sel_msgType = $('select_msgType')
+				, input_message = $('input_message')
+				, form = $('form_message')
+			;
+			
+			form.addEvent('submit', _addMessage);
+			
+			function _addMessage() {
+				var msg = input_message.value.trim();
+			
+				if ( !msg )
+					return false;
+			
+				var type = sel_msgType.value;
+			
+				if ( type != 'consecutive' ) {
+					appendMessage("<div class=\"" + type + "\"><span class=\"time\" title=\"%time{E~EEE, d LLL Y, H:m}%\">99:99</span><span class=\"sender\">%sender%</span><div class=\"message\">" + msg + "</div><div id=\"insert\"></div></div>");
+				}
+				else {
+					appendNextMessage("<span class=\"timeC\" title=\"%time{E~EEE, d LLL Y, H:m}%\">99:99</span><div class=\"message consecutive\">" + msg + "</div></div><div id=\"insert\"></div>");
+				}
+				
+				input_message.value = "";
 
-div.history div.incoming {
-	background-color: rgba(0,0,0, 0.2);
-}
+				return false;
+			}
+			
+			$('input_fontSize_Submit').getParent('form').addEvent('submit', function () {
+				var size = $('input_fontSize').value.toFloat();
+				if ( size <= 0 )
+					return;
+				
+				document.body.style.fontSize = size + 'px';
+			});
+			
+			$('input_msgDivWidth_Submit').getParent('form').addEvent('submit', function () {
+				var size = $('input_msgDivWidth').value.toFloat();
+				if ( size <= 0 )
+					return;
+				
+				if ( size == 100 ) {
+					document.body.removeClass('floatMsg');
+					return;
+				}
+				
+				document.body.addClass('floatMsg');
+				$('_msgStyle').set('html',
+					$('_msgStyle').get('html').replace(/width:\s*[0-9]+%/, 'width: ' + size + '%')
+				);
+					
+			});
+			
+			$('input_msgAlign').addEvent('change', function (ev) {
+				document.body.set('class', document.body.get('class').replace(/msg\-[a-z]+/g, '') );
+				$(document.body).addClass('msg-' + this.value);
+			});
 
-div.history div.outgoing {
-	background-color: rgba(0,0,0, 0.1);
-}
+			$('input_timeAlign').addEvent('change', function (ev) {
+				document.body.set('class', document.body.get('class').replace(/time\-[a-z]+/g, '') );
+				$(document.body).addClass('time-' + this.value);
+			});
+			
+			$$('#input_fontSize, #input_msgDivWidth').addEvent('keydown', function (ev) {
+				var value = this.value.toFloat();
+				
+				if ( value < 0 )
+					return;
+				
+				switch ( ev.key ) {
+					case 'up':
+						value++;
+					break;
+					
+					case 'down':
+						value--;
+					break;
+					
+					default:
+						return true;
+					break;
+				}
+				
+				ev.preventDefault();
+				
+				if ( value > this.max || value < this.min )
+					return;
+				
+				this.value = value;
+				$(this).getParent('form').fireEvent('submit');
+				
+				alignChat(true);
+			});
+		});
+	</script>
 
-div.history {
-	color: rgba(255,255,255, 0.6);
-}
+	<!-- End: Preview-specific code -->
 
-div.history div.message {
-	color: rgba(255,255,255, 0.6);
-}
+</head>
+<body onload="alignChat(true);" style="==bodyBackground==">
+<!-- %@ -->
 
-div.history span.time {
-	color: rgba(255,255,255, 0.5);
-}
+<div id="toolbox">
+	<form id="form_alignment" action="javascript:false;">
+		<label>
+			Outgoing message content alignment:
+			<select id="input_msgAlign">
+				<option>left</option>
+				<option selected="selected">right</option>
+			</select>
+			
+			timestamp:
+			<select id="input_timeAlign">
+				<option>left</option>
+				<option selected="selected">right</option>
+			</select>
+		</label>
+	</form>
+		
+	<form action="javascript:false;">
+		<label>
+			Font size:
+			<input type="text" id="input_fontSize" size="2" min="1" max="48" value="13" />px
+			<input type="submit" id="input_fontSize_Submit" value="Set" />
+		</label>
+	</form>
+		
+	<form action="javascript:false;">
+		<label>
+			Message div width:
+			<input type="text" id="input_msgDivWidth" size="3" min="1" max="100" value="100" />
+			%
+			<input type="submit" id="input_msgDivWidth_Submit" value="Set" />
+		</label>
+	</form>
+	
+	<form id="form_message" action="javascript:false;">
+		<label>New message:
+			
+			<input type="text" id="input_message" value="" />
+			
+			<select id="select_msgType">
+				<option>incoming</option>
+				<option>outgoing</option>
+				<option>consecutive</option>
+			</select>
+			
+			<input type="submit" value="Add" />
+		</label>
+	</form>
+</div>
 
-div.history span.timeC {
-	color: rgba(255,255,255, 0.2);
-}
+<div id="Chat">
+<div class="status date_separator">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="statusMsg">Data data data data</span>
+</div>
 
-#insert {
-	display: none;
-}
+<div class="incoming history">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="sender">%sender%</span>
+	<div class="message">Lorem ipsum dolor sit amet quam. Curabitur.</div>
+	<span class="timeC" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<div class="message consecutive">In nec elementum euismod, quam quam at libero. Nullam et malesuada fames ac nisl.</div>
+</div>
 
-</style>
-<body>
+<div class="outgoing history">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="sender">%sender%</span>
+<!--	<span class="sender">%sender%</span>-->
+	<div class="message">Donec condimentum, pulvinar sem eu.</div>
+</div>
+
+<div class="status offline">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="statusMsg">%sender% offline</span>
+</div>
 
 <div class="status date_separator">
-	<span class="time" title="%time{%c}%">99:99 AM</span>
-	<span class="statusMsg">Monday, July 10, 2009</span>
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="statusMsg">15th November 2000</span>
 </div>
 
 <div class="incoming">
-	<span class="time" title="%time{%c}%">99:99 AM</span>
-	<span class="sender">Sender</span>
-	<div class="message">Lorem ipsum dolor sit amet tempor tincidunt.</div>
-	<span class="timeC" title="%time{%c}%">99:99 AM</span>
-	<div class="message consecutive">Mauris viverra elit. Curabitur ut nunc justo.</div>
-	<span class="timeC" title="%time{%c}%">99:99 AM</span>
-	<div class="message consecutive">Curabitur commodo. Cras porta, turpis vitae mauris.</div>
-	<span class="timeC" title="%time{%c}%">99:99 AM</span>
-	<div class="message consecutive">Pellentesque eu bibendum scelerisque sem.</div>
-	<span class="timeC" title="%time{%c}%">99:99 AM</span>
-	<div class="message consecutive">Aliquam fermentum diam eros, sit amet.</div>
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="sender">%sender%</span>
+	<div class="message">Praesent est id nibh. Vestibulum ante pellentesque eget.</div>
 </div>
+
+<div class="outgoing">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="sender">%sender%</span>
+	<div class="message">Proin odio. Nullam aliquet, arcu nec turpis a auctor euismod. Nulla venenatis. Morbi.</div>
+</div>
+
+<div class="status online">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="statusMsg">%sender% is available</span>
+</div>
+
+<div class="status offline">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="statusMsg">%sender% is offline</span>
+</div>
+
+<div class="status away">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="statusMsg">%sender% is away</span>
+</div>
+
+<div class="status error">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="statusMsg">An error occured</span>
+</div>
+
+<div class="status date_separator">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="statusMsg">17th November 2000</span>
+</div>
+
+<div class="status">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="statusMsg">Default status message</span>
+</div>
+
+<!--<div class="status">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="statusMsg"><img class="fileIcon" src="http://www.uhrenmix.de/templates/uhrenmix/buttons/german/cart_small_icon.gif" alt="file icon" />%fileName%<button onlick="%saveFileHander%">Save</button></span>
+</div>-->
+
+<div class="incoming">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="sender">%sender%</span>
+	<div class="message">Vestibulum commodo tempus, urna quis lectus sit amet augue imperdiet.</div>
+	<span class="timeC" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<div class="message consecutive">Cras ut aliquet id, mattis eros. Aliquam ultricies lobortis augue a neque.</div>
+	<span class="timeC" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<div class="message consecutive">Lorem ipsum dolor sit amet pede. Mauris vel tortor. Etiam tempor tincidunt leo tristique commodo. Curabitur et malesuada vitae, imperdiet quis, tincidunt consequat, augue sed adipiscing elit. Nam cursus, mi ornare ligula ut leo sed tortor. Aliquam gravida sollicitudin, urna eu odio. Etiam congue et, accumsan congue. Nam molestie. Phasellus tellus suscipit.</div>
+	<span class="timeC" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<div class="message consecutive">Nullam fermentum pellentesque vel, semper sollicitudin. Vestibulum ante in quam.</div>
+</div>
+
+<div class="outgoing">
+	<span class="time" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<span class="sender">%sender%</span>
+	<div class="message">Aliquam adipiscing justo augue nec elit tincidunt luctus.</div>
+	<span class="timeC" title="%time{E~EEE, d LLL Y, H:m}%">99:99</span>
+	<div class="message consecutive">Phasellus id mi.</div>
+	<div id="insert"></div>
+</div>
+
+</div>
+<!-- %@ -->
+<script type="text/javascript">
+ 	//Putting the #chat container into another div.
+ 	//This allows the custom scrollbar to appear.
+	var d_chat = document.getElementById("Chat");
+//	var d_container = document.body;
+	var d_container = document.createElement('div');
+ 	
+ 	d_container.setAttribute('id', 'container');
+ 	document.body.appendChild(d_container);
+ 	d_container.appendChild(d_chat);
+
+function nearBottom() {
+	return ( d_container.scrollTop >= ( d_chat.offsetHeight - ( window.innerHeight * 1.2 ) ) );
+}
+function scrollToBottom() {
+	d_container.scrollTop = d_chat.offsetHeight;
+}
+</script>
 
 </body>
 </html>
