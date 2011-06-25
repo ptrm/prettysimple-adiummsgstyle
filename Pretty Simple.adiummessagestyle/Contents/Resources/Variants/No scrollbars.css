@@ -1,6 +1,12 @@
 @import url(../Main.css);
 
+/*
 #container {
 	overflow: hidden;
 	margin: 10px 0;
+}*/
+
+::-webkit-scrollbar {
+    /* set the width of the scroll bar */
+    width: 0px;
 }
